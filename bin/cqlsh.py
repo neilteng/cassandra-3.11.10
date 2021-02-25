@@ -388,16 +388,17 @@ def insert_driver_hooks():
     # Native datetime types blow up outside of datetime.[MIN|MAX]_YEAR. We will fall back to an int timestamp
     def deserialize_date_fallback_int(byts, protocol_version):
         timestamp_ms = int64_unpack(byts)
+        ''' try to ouput only epoch_ms time instead of python strftime
         try:
             return datetime_from_timestamp(timestamp_ms / 1000.0)
         except OverflowError:
             warnings.warn(DateOverFlowWarning("Some timestamps are larger than Python datetime can represent. "
                                               "Timestamps are displayed in milliseconds from epoch."))
             return timestamp_ms
-        ''' try to ouput only epoch_ms time instead of python strftime
+        
         
         '''
-        #return timestamp_ms
+        return timestamp_ms
     cassandra.cqltypes.DateType.deserialize = staticmethod(deserialize_date_fallback_int)
 
     if hasattr(cassandra, 'deserializers'):
